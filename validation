@@ -1,0 +1,10 @@
+const urlRegExp = new RegExp('^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&\'()*+,;=.]+$');
+
+link: {
+  type:..
+  required:..
+  validate: {
+      validator: (v) => urlRegExp.test(v),
+      message: 'Текст ошибки',
+    },
+}
