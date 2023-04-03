@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const router = require('./routes/index');
 
 const { PORT = 3000, BASE_PATH = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
+const HTTP_STATUS_NOT_FOUND = 404;
 
 mongoose.connect(BASE_PATH, {})
   .then(() => {
@@ -21,8 +23,9 @@ app.use((req, res, next) => {
 
   next();
 });
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+app.use('/', router);
+
+app.all('*', (req, res) => res.status(HTTP_STATUS_NOT_FOUND).send({ message: 'Запрашиваемая страница не найдена' }));
 
 app.listen(PORT, () => {
   console.log(`Listing on port ${PORT}`);
