@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const urlRegExp = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;
+
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -10,6 +12,12 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator(v) {
+        return urlRegExp.test(v);
+      },
+      message: 'Некорректная ссылка',
+    },
   },
   owner: { // ссылка на модель автора карточки, тип ObjectId, обязательное поле;
     type: mongoose.Schema.Types.ObjectId,

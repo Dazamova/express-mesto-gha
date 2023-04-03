@@ -5,13 +5,14 @@ const mongoose = require('mongoose');
 const { PORT = 3000, BASE_PATH = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
 
-app.use(bodyParser.json()); // для работы с телом запроса
+mongoose.connect(BASE_PATH, {})
+  .then(() => {
+    console.log('Connected');
+  }).catch((err) => {
+    console.log(`Error during connection ${err}`);
+  });
 
-mongoose.connect(BASE_PATH).then(() => {
-  console.log('Connected');
-}).catch((err) => {
-  console.log(err);
-});
+app.use(bodyParser.json()); // для работы с телом запроса
 
 app.use((req, res, next) => {
   req.user = {
