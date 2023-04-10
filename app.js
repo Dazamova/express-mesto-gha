@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const router = require('./routes/index');
+const cookieParser = require('cookie-parser');
+const { Joi, celebrate, Segments, errors } = require('celebrate');
 
 const { PORT = 3000, BASE_PATH = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
@@ -15,17 +17,26 @@ mongoose.connect(BASE_PATH, {})
   });
 
 app.use(bodyParser.json()); // для работы с телом запроса
+app.use(cookieParser());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6425e620a32586832a40fa25', // id тестового пользователя
-  };
-
-  next();
-});
 app.use('/', router);
 
 app.all('*', (req, res) => res.status(HTTP_STATUS_NOT_FOUND).send({ message: 'Запрашиваемая страница не найдена' }));
+
+app.use(errors()); // обработчик ошибок celebrate
+
+app.use((err, req, res, next) => { // централизованный обработчик ошибок
+  const { statusCode = 500, message } = err; // если у ошибки нет статуса, выставляем 500
+
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
+});
 
 app.listen(PORT, () => {
   console.log(`Listing on port ${PORT}`);
