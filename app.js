@@ -1,9 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const router = require('./routes/index');
 const cookieParser = require('cookie-parser');
-const { Joi, celebrate, Segments, errors } = require('celebrate');
+const { errors } = require('celebrate');
+const router = require('./routes/index');
 
 const { PORT = 3000, BASE_PATH = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
