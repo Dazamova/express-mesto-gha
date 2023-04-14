@@ -5,6 +5,7 @@ const BadRequestError = require('../errors/bad-request-err'); // 400
 const ForbiddenError = require('../errors/forbidden-err'); // 403
 
 const HTTP_STATUS_OK = 200;
+const HTTP_STATUS_CREATED = 201;
 
 module.exports.getAllCards = (req, res, next) => {
   Card.find({})
@@ -20,7 +21,7 @@ module.exports.createCard = (req, res, next) => {
   Card.create({ name, link, owner: ownerId })
     .then((data) => {
       data.populate(['owner', 'likes'])
-        .then((card) => res.status(HTTP_STATUS_OK).send(card))
+        .then((card) => res.status(HTTP_STATUS_CREATED).send(card))
         .catch((err) => next(err));
     })
     .catch((err) => {
@@ -63,19 +64,6 @@ module.exports.deleteCard = (req, res, next) => {
       }
     });
 };
-
-// Card.findByIdAndRemove(cardId)
-//   .orFail()
-//   .then((card) => res.status(HTTP_STATUS_OK).send(card))
-//   .catch((err) => {
-//     if (err.name === 'CastError') {
-//       res.status(HTTP_STATUS_BAD_REQUEST).send({ message: 'Передан некорректный _id карточки' });
-//     } else if (err.name === 'DocumentNotFoundError') {
-//       res.status(HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка с указанным _id не найдена' });
-//     } else {
-//       res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
-//     }
-//   });
 
 module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(

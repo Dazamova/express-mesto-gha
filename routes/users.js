@@ -11,7 +11,7 @@ router.get('/', getAllUsers); // GET /users — возвращает всех п
 router.get('/me', getMe); // GET /users/me - возвращает пользователя
 router.get('/:userId', celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24),
+    userId: Joi.string().required().hex().length(24),
   }),
 }), getUser); // GET /users/:userId - возвращает пользователя по _id
 router.patch('/me', celebrate({

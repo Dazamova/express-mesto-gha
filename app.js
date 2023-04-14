@@ -4,10 +4,10 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const router = require('./routes/index');
+const NotFoundError = require('./errors/not-found-err');
 
 const { PORT = 3000, BASE_PATH = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
-const HTTP_STATUS_NOT_FOUND = 404;
 
 mongoose.connect(BASE_PATH, {})
   .then(() => {
@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 app.use('/', router);
 
-app.all('*', (req, res) => res.status(HTTP_STATUS_NOT_FOUND).send({ message: 'Запрашиваемая страница не найдена' }));
+app.all('*', (req, res, next) => next(new NotFoundError('Запрашиваемая страница не найдена')));
 
 app.use(errors()); // обработчик ошибок celebrate
 

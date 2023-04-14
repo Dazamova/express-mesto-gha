@@ -4,7 +4,6 @@ const User = require('../models/user');
 
 const NotFoundError = require('../errors/not-found-err'); // 404
 const BadRequestError = require('../errors/bad-request-err'); // 400
-const UnauthorizedError = require('../errors/unauthorized-err'); // 401
 const ConflictError = require('../errors/conflict-err'); // 409
 
 const HTTP_STATUS_OK = 200;
@@ -47,21 +46,16 @@ module.exports.createUser = (req, res, next) => { // POST /users — созда�
 };
 
 module.exports.login = (req, res, next) => {
-  const { email } = req.body;
+  const { email, password } = req.body;
 
-  return User.findOne({ email }).select('+password')
-    .orFail()
+  return User.findUser(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'ya-practicum', { expiresIn: '7d' }); // Пейлоуд токена — зашифрованный в строку объект пользователя и секретный ключ
 
       res.cookie('jwt', token, { maxAge: 6048e5, httpOnly: true }).send(user.toJSON());
     })
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        next(new UnauthorizedError('Неверный логин или пароль'));
-      } else {
-        next(err);
-      }
+      next(err);
     });
 };
 
